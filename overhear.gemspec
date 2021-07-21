@@ -7,4 +7,5 @@ Gem::Specification.new do |s|
   s.email = 'millard64@hotmail.co.uk'
   s.files = ['lib/overhear.rb']
   s.license = 'MIT'
+  s.add_runtime_dependency 'faraday', '~> 1.0'
 end
