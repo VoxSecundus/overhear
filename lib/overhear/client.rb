@@ -34,6 +34,4 @@ module Overhear
       return JSON.parse(response.body)
     end
   end
-
-  class InvalidTokenError < StandardError; end
 end
