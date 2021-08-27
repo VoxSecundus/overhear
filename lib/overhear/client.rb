@@ -25,8 +25,9 @@ module Overhear
 
     def now_playing
       response = api_call("/1/user/#{@username}/playing-now")
+      payload = JSON.parse(response.body)['payload']
 
-      return JSON.parse(response.body)
+      return Song.new(payload)
     end
 
     private
