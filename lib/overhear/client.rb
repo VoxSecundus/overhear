@@ -21,7 +21,7 @@ module Overhear
     end
 
     def now_playing
-      response = api_call("/1/user/#{@username}/playing-now")
+      response = api_call("/1/user/#{@username}/playing-now", default_headers)
       payload = JSON.parse(response.body)['payload']
 
       return Song.new(payload)
@@ -29,19 +29,19 @@ module Overhear
 
     private
 
-    def headers
+    def default_headers
       {
         'Authorization' => "Token #{@user_token}"
       }
     end
 
     def validate_user_token
-      response = api_call('/1/validate-token')
+      response = api_call('/1/validate-token', default_headers)
 
       return JSON.parse(response.body)
     end
 
-    def api_call(endpoint)
+    def api_call(endpoint, headers)
       response = Faraday.get(API_ROOT + endpoint) do |req|
         req.headers = headers
       end
