@@ -23,14 +23,26 @@ module Overhear
       validate_user_token['valid']
     end
 
+    def now_playing
+      response = api_call("/1/user/#{@username}/playing-now")
+
+      return JSON.parse(response.body)
+    end
+
     private
 
     def validate_user_token
-      response = Faraday.get(API_ROOT + '/1/validate-token') do |req|
+      response = api_call('/1/validate-token')
+
+      return JSON.parse(response.body)
+    end
+
+    def api_call(endpoint)
+      response = Faraday.get(API_ROOT + endpoint) do |req|
         req.headers = @headers
       end
 
-      return JSON.parse(response.body)
+      return response
     end
   end
 end
