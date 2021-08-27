@@ -7,9 +7,6 @@ module Overhear
 
     def initialize(user_token = nil)
       @user_token = user_token
-      @headers = {
-        'Authorization' => "Token #{@user_token}"
-      }
 
       token_validation = validate_user_token
       if !token_validation['valid']
@@ -32,6 +29,12 @@ module Overhear
 
     private
 
+    def headers
+      {
+        'Authorization' => "Token #{@user_token}"
+      }
+    end
+
     def validate_user_token
       response = api_call('/1/validate-token')
 
@@ -40,7 +43,7 @@ module Overhear
 
     def api_call(endpoint)
       response = Faraday.get(API_ROOT + endpoint) do |req|
-        req.headers = @headers
+        req.headers = headers
       end
 
       return response
