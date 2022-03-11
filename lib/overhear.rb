@@ -5,5 +5,4 @@ module Overhear
   require 'overhear/song'
 
   class InvalidTokenError < StandardError; end
-  class NotListeningError < StandardError; end
 end

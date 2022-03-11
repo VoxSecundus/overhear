@@ -2,7 +2,7 @@ module Overhear
   class Song
     def initialize(payload)
       if payload['count'] == 0
-        raise NotListeningError
+        return nil
       end
 
       track_metadata = payload['listens'].first['track_metadata']
