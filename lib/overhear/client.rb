@@ -27,6 +27,13 @@ module Overhear
       return Song.new(payload)
     end
 
+    def listen_count
+      response = api_call("/1/user/#{@username}/listen-count", default_headers)
+      payload = JSON.parse(response.body)['payload']
+
+      return payload['count']
+    end
+
     private
 
     def default_headers
