@@ -1,12 +1,8 @@
-require 'faraday'
-require 'json'
-
 module Overhear
-  class Client
-    API_ROOT = 'https://api.listenbrainz.org'
+  class UserClient < Client
 
-    def initialize(user_token = nil)
-      @user_token = user_token
+    def initialize(token:)
+      @user_token = token
 
       token_validation = validate_user_token
       if !token_validation['valid']
@@ -46,14 +42,6 @@ module Overhear
       response = api_call('/1/validate-token', default_headers)
 
       return JSON.parse(response.body)
-    end
-
-    def api_call(endpoint, headers)
-      response = Faraday.get(API_ROOT + endpoint) do |req|
-        req.headers = headers
-      end
-
-      return response
     end
   end
 end
