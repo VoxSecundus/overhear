@@ -7,5 +7,9 @@ module Overhear
   require "overhear/clients/user_client"
   require "overhear/song"
 
-  class InvalidTokenError < StandardError; end
+  class InvalidTokenError < StandardError
+    def initialize(msg="Invalid token passed")
+      super
+    end
+  end
 end
