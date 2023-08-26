@@ -17,19 +17,23 @@ module Overhear
 
     def now_playing
       response = api_call("/1/user/#{@username}/playing-now", default_headers)
-      payload = JSON.parse(response.body)["payload"]
+      payload = parse_response(response)["payload"]
 
       Song.new(payload)
     end
 
     def listen_count
       response = api_call("/1/user/#{@username}/listen-count", default_headers)
-      payload = JSON.parse(response.body)["payload"]
+      payload = parse_response(response)["payload"]
 
       payload["count"]
     end
 
     private
+
+    def parse_response(response)
+      parsed = JSON.parse(response.body)
+    end
 
     def default_headers
       {
@@ -40,7 +44,7 @@ module Overhear
     def validate_user_token
       response = api_call("/1/validate-token", default_headers)
 
-      JSON.parse(response.body)
+      parse_response(response)
     end
   end
 end
