@@ -3,9 +3,9 @@
 require_relative "overhear/version"
 
 module Overhear
-  require 'overhear/clients/client'
-  require 'overhear/clients/user_client'
-  require 'overhear/song'
+  require "overhear/clients/client"
+  require "overhear/clients/user_client"
+  require "overhear/song"
 
   class InvalidTokenError < StandardError; end
 end
