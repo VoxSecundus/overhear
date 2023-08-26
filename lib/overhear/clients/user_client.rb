@@ -1,47 +1,57 @@
+# frozen_string_literal: true
+
 module Overhear
   class UserClient < Client
-
-    def initialize(token:)
+    def initialize(token)
+      super
       @user_token = token
 
       token_validation = validate_user_token
-      if !token_validation['valid']
-        raise InvalidTokenError
-      end
+      raise InvalidTokenError unless token_validation["valid"]
 
-      @username = token_validation['user_name']
+      @username = token_validation["user_name"]
     end
 
     def user_token_valid?
-      validate_user_token['valid']
+      validate_user_token["valid"]
     end
 
     def now_playing
       response = api_call("/1/user/#{@username}/playing-now", default_headers)
-      payload = JSON.parse(response.body)['payload']
+      payload = parse_response(response)["payload"]
 
-      return Song.new(payload)
+      return nil if payload["count"].zero?
+
+      metadata = payload["listens"].first["track_metadata"]
+
+      Song.from_track_metadata(metadata)
     end
 
     def listen_count
       response = api_call("/1/user/#{@username}/listen-count", default_headers)
-      payload = JSON.parse(response.body)['payload']
+      payload = parse_response(response)["payload"]
 
-      return payload['count']
+      payload["count"]
     end
 
     private
 
+    def parse_response(response)
+      JSON.parse(response.body).tap do |resp|
+        puts resp if ENV["overhear_DEBUG"]
+      end
+    end
+
     def default_headers
       {
-        'Authorization' => "Token #{@user_token}"
+        "Authorization" => "Token #{@user_token}"
       }
     end
 
     def validate_user_token
-      response = api_call('/1/validate-token', default_headers)
+      response = api_call("/1/validate-token", default_headers)
 
-      return JSON.parse(response.body)
+      parse_response(response)
     end
   end
 end
