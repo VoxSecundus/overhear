@@ -8,7 +8,7 @@ module Overhear
   require "overhear/song"
 
   class InvalidTokenError < StandardError
-    def initialize(msg="Invalid token passed")
+    def initialize(msg = "Invalid token passed")
       super
     end
   end

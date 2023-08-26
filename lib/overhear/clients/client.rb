@@ -5,7 +5,7 @@ require "json"
 
 module Overhear
   class Client
-    API_ROOT = "https://api.listenbrainz.org".freeze
+    API_ROOT = "https://api.listenbrainz.org"
 
     private
 

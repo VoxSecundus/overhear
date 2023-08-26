@@ -19,7 +19,16 @@ module Overhear
       response = api_call("/1/user/#{@username}/playing-now", default_headers)
       payload = parse_response(response)["payload"]
 
-      Song.new(payload)
+      return nil if payload["count"].zero?
+
+      metadata = payload["listens"].first["track_metadata"]
+      Song.new(
+        artist_names: metadata.dig("additional_info", "artist_names"),
+        name: metadata["track_name"],
+        release_name: metadata["release_name"],
+        isrc: metadata.dig("additional_info", "isrc"),
+        duration: metadata.dig("additional_info", "duration_ms")
+      )
     end
 
     def listen_count
@@ -32,8 +41,8 @@ module Overhear
     private
 
     def parse_response(response)
-      parsed = JSON.parse(response.body).tap do |resp|
-        puts resp if ENV['overhear_DEBUG']
+      JSON.parse(response.body).tap do |resp|
+        puts resp if ENV["overhear_DEBUG"]
       end
     end
 
