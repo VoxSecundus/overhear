@@ -23,13 +23,8 @@ module Overhear
       return nil if payload["count"].zero?
 
       metadata = payload["listens"].first["track_metadata"]
-      Song.new(
-        artist_names: metadata.dig("additional_info", "artist_names"),
-        name: metadata["track_name"],
-        release_name: metadata["release_name"],
-        isrc: metadata.dig("additional_info", "isrc"),
-        duration: metadata.dig("additional_info", "duration_ms")
-      )
+
+      Song.from_track_metadata(metadata)
     end
 
     def listen_count
