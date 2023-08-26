@@ -32,7 +32,9 @@ module Overhear
     private
 
     def parse_response(response)
-      parsed = JSON.parse(response.body)
+      parsed = JSON.parse(response.body).tap do |resp|
+        puts resp if ENV['overhear_DEBUG']
+      end
     end
 
     def default_headers
