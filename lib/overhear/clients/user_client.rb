@@ -2,7 +2,7 @@
 
 module Overhear
   class UserClient < Client
-    def initialize(token:)
+    def initialize(token)
       @user_token = token
 
       token_validation = validate_user_token
