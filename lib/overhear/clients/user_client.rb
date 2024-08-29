@@ -13,9 +13,8 @@ module Overhear
       @username = token_validation['user_name']
     end
 
-    def user_token_valid?
-      validate_user_token['valid']
-    end
+    attr_reader :username
+    attr_reader :user_token
 
     def now_playing
       response = api_call("/1/user/#{@username}/playing-now", default_headers)
@@ -36,6 +35,10 @@ module Overhear
     end
 
     private
+
+    def user_token_valid?
+      validate_user_token['valid']
+    end
 
     def parse_response(response)
       JSON.parse(response.body).tap do |resp|
