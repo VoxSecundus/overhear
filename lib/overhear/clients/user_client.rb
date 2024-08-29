@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Overhear
+  # Client class for user-specific actions
   class UserClient < Client
     def initialize(token)
       super()

@@ -4,6 +4,7 @@ require 'faraday'
 require 'json'
 
 module Overhear
+  # Abstract class for all client subclasses
   class Client
     API_ROOT = ENV['overhear_API_ROOT'] || 'https://api.listenbrainz.org'
 

@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module Overhear
+  # Class to represent a single song in the ListenBrainz database
   class Song
     def initialize(artist_names:, name:, release_name:, isrc:, duration:)
       @artist_names = artist_names
