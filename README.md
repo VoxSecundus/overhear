@@ -21,6 +21,7 @@ client = UserClient.new("<token>")
 ```
 
 `UserClient#listen_count` - Return the total listen count for a user
+
 `UserClient#now_playing` - Return the currently playing song for a user. Returns nil if no song currently playing.
 
 ## Development
