@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require "faraday"
-require "json"
+require 'faraday'
+require 'json'
 
 module Overhear
   class Client
-    API_ROOT = ENV['overhear_API_ROOT'] || "https://api.listenbrainz.org"
+    API_ROOT = ENV['overhear_API_ROOT'] || 'https://api.listenbrainz.org'
 
     private
 

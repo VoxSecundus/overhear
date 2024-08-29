@@ -12,11 +12,11 @@ module Overhear
 
     def self.from_track_metadata(metadata)
       new(
-        artist_names: metadata.dig("additional_info", "artist_names"),
-        name: metadata["track_name"],
-        release_name: metadata["release_name"],
-        isrc: metadata.dig("additional_info", "isrc"),
-        duration: metadata.dig("additional_info", "duration_ms")
+        artist_names: metadata.dig('additional_info', 'artist_names'),
+        name: metadata['track_name'],
+        release_name: metadata['release_name'],
+        isrc: metadata.dig('additional_info', 'isrc'),
+        duration: metadata.dig('additional_info', 'duration_ms')
       )
     end
 
