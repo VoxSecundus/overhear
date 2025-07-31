@@ -13,8 +13,7 @@ module Overhear
       @username = token_validation['user_name']
     end
 
-    attr_reader :username
-    attr_reader :user_token
+    attr_reader :username, :user_token
 
     def now_playing
       response = api_call("/1/user/#{@username}/playing-now", default_headers)
