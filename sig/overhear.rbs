@@ -1,4 +1,44 @@
 module Overhear
   VERSION: String
-  # See the writing guide of rbs: https://github.com/ruby/rbs#guides
+
+  # Error class for invalid ListenBrainz API token
+  class InvalidTokenError < StandardError
+    def initialize: (?String msg) -> void
+  end
+
+  # Abstract class for all client subclasses
+  class Client
+    API_ROOT: String
+
+    private
+    def api_call: (String endpoint, Hash[String, String] headers) -> untyped
+  end
+
+  # Client class for user-specific actions
+  class UserClient < Client
+    attr_reader username: String
+    attr_reader user_token: String
+
+    def initialize: (String token) -> void
+    def now_playing: -> Song?
+    def listen_count: -> Integer
+
+    private
+    def user_token_valid?: -> bool
+    def parse_response: (untyped response) -> Hash[String, untyped]
+    def default_headers: -> Hash[String, String]
+    def validate_user_token: -> Hash[String, untyped]
+  end
+
+  # Class to represent a single song in the ListenBrainz database
+  class Song
+    attr_reader artist_names: Array[String]
+    attr_reader name: String
+    attr_reader release_name: String
+    attr_reader isrc: String?
+    attr_reader duration: Integer?
+
+    def initialize: (artist_names: Array[String], name: String, release_name: String, isrc: String?, duration: Integer?) -> void
+    def self.from_track_metadata: (Hash[String, untyped] metadata) -> Song
+  end
 end
