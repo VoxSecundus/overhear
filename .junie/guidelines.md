@@ -81,7 +81,7 @@ end
    - Follow the standard Ruby style guide
    - Use frozen_string_literal comments
    - Use two-space indentation
-   - Include documentation comments for classes and methods
+   - Include YARD documentation for all classes and methods (see Documentation section below)
    - Update `sig/overhear.rbs` with RBS style signatures
 
 3. API Integration:
@@ -93,3 +93,44 @@ end
 4. Error Handling:
    - Use `InvalidTokenError` for authentication issues
    - API responses are parsed with error handling in the client classes
+
+## Documentation
+
+### YARD Documentation
+
+This project uses [YARD](https://yardoc.org/) for documentation. All classes and methods must be documented using YARD tags.
+
+1. Installing and Running YARD:
+   ```bash
+   # Generate documentation
+   yard doc
+   
+   # Start a local server to view documentation
+   yard server --reload
+   ```
+
+2. YARD Tag Guidelines:
+   - Every class and module must include a description and `@since` tag
+   - Every method must include a description
+   - Document all parameters with `@param [Type] name description`
+   - Document return values with `@return [Type] description`
+   - Document exceptions raised with `@raise [ExceptionClass] description`
+   - Include usage examples with `@example` where appropriate
+   - Use `@api private` for internal methods not intended for public use
+
+3. Example YARD Documentation:
+   ```ruby
+   # A class that represents a song in the ListenBrainz database
+   # @since 0.1.0
+   class Song
+     # Creates a new Song instance
+     # @param name [String] the name of the song
+     # @param artist [String] the artist name
+     # @return [Song] a new instance of Song
+     # @example
+     #   song = Song.new(name: "Song Title", artist: "Artist Name")
+     def initialize(name:, artist:)
+       # implementation
+     end
+   end
+   ```
