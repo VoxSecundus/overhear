@@ -14,8 +14,21 @@ Layout/LineLength:
 
 Metrics/MethodLength:
   Max: 20
+  Exclude:
+    - 'test/**/*'
+    - '*.gemspec'
 
 Metrics/BlockLength:
   Exclude:
     - 'test/**/*'
     - '*.gemspec'
+
+Metrics/ClassLength:
+  Exclude:
+    - 'test/**/*'
+
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/CyclomaticComplexity:
+  Enabled: false
