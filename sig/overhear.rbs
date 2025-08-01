@@ -1,6 +1,9 @@
 module Overhear
   VERSION: String
-
+  
+  # @return [Overhear::Logger] the global logger instance
+  def self.logger: -> Logger
+  
   # Error class for invalid ListenBrainz API token
   class InvalidTokenError < StandardError
     def initialize: (?String msg) -> void
@@ -40,5 +43,51 @@ module Overhear
 
     def initialize: (artist_names: Array[String], name: String, release_name: String, isrc: String?, duration: Integer?) -> void
     def self.from_track_metadata: (Hash[String, untyped] metadata) -> Song
+  end
+  
+  # Logger class for Overhear gem with configurable verbosity levels
+  class Logger
+    # Available log levels in order of increasing verbosity
+    LEVELS: Hash[Symbol, Integer]
+    
+    # @return [Symbol] the current log level
+    attr_reader level: Symbol
+    
+    # Creates a new Logger instance
+    def initialize: -> void
+    
+    # Sets the log level
+    # @param level [Symbol, String] the log level to set
+    # @raise [ArgumentError] if the level is invalid
+    def level=: (Symbol | String level) -> Symbol
+    
+    # Logs a message at ERROR level
+    def error: (String message) -> nil
+    
+    # Logs a message at WARN level
+    def warn: (String message) -> nil
+    
+    # Logs a message at INFO level
+    def info: (String message) -> nil
+    
+    # Logs a message at DEBUG level
+    def debug: (String message) -> nil
+    
+    # Logs a message at TRACE level
+    def trace: (String message) -> nil
+    
+    # Logs a message if the current level is sufficient
+    def log: (Symbol level, String message) -> nil
+    
+    # Logs an object as JSON if the current level is sufficient
+    def log_json: (Symbol level, untyped object) -> nil
+    
+    private
+    
+    # Determines if a message at the given level should be logged
+    def should_log?: (Symbol level) -> bool
+    
+    # Determines the log level from environment variables
+    def determine_log_level: -> Symbol
   end
 end

@@ -12,12 +12,19 @@ module Overhear
     #   client = Overhear::UserClient.new('your_listenbrainz_token')
     def initialize(token)
       super()
+      Overhear.logger.info("Initializing UserClient")
       @user_token = token
 
+      Overhear.logger.debug("Validating user token")
       token_validation = validate_user_token
-      raise InvalidTokenError unless token_validation['valid']
+      
+      unless token_validation['valid']
+        Overhear.logger.error("Invalid token provided")
+        raise InvalidTokenError
+      end
 
       @username = token_validation['user_name']
+      Overhear.logger.info("UserClient initialized for user: #{@username}")
     end
 
     # @return [String] the ListenBrainz username associated with the token
@@ -32,14 +39,21 @@ module Overhear
     #   song = client.now_playing
     #   puts "Now playing: #{song.name}" if song
     def now_playing
+      Overhear.logger.info("Fetching currently playing track for user: #{@username}")
       response = api_call("/1/user/#{@username}/playing-now", default_headers)
       payload = parse_response(response)['payload']
 
-      return nil if payload['count'].zero?
+      if payload['count'].zero?
+        Overhear.logger.info("No track currently playing for user: #{@username}")
+        return nil
+      end
 
       metadata = payload['listens'].first['track_metadata']
-
-      Song.from_track_metadata(metadata)
+      Overhear.logger.debug("Found currently playing track metadata")
+      
+      song = Song.from_track_metadata(metadata)
+      Overhear.logger.info("Currently playing: #{song.name} by #{song.artist_names.join(', ')}")
+      song
     end
 
     # Gets the total number of listens for the user
@@ -48,10 +62,13 @@ module Overhear
     #   count = client.listen_count
     #   puts "Total listens: #{count}"
     def listen_count
+      Overhear.logger.info("Fetching listen count for user: #{@username}")
       response = api_call("/1/user/#{@username}/listen-count", default_headers)
       payload = parse_response(response)['payload']
 
-      payload['count']
+      count = payload['count']
+      Overhear.logger.info("Total listen count for #{@username}: #{count}")
+      count
     end
 
     private
@@ -63,13 +80,13 @@ module Overhear
       validate_user_token['valid']
     end
 
-    # Parses the API response and outputs debug information if enabled
+    # Parses the API response and logs debug information if enabled
     # @param response [Faraday::Response] the API response
     # @return [Hash] the parsed JSON response
     # @api private
     def parse_response(response)
       JSON.parse(response.body).tap do |resp|
-        puts resp if ENV['overhear_DEBUG']
+        Overhear.logger.log_json(:DEBUG, resp)
       end
     end
 

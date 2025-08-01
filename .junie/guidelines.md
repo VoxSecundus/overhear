@@ -77,12 +77,14 @@ end
    rake rubocop
    ```
 
+
 2. Code Style Guidelines:
    - Follow the standard Ruby style guide
    - Use frozen_string_literal comments
    - Use two-space indentation
    - Include YARD documentation for all classes and methods (see Documentation section below)
    - Update `sig/overhear.rbs` with RBS style signatures
+   - Always run RuboCop autocorrect on file save
 
 3. API Integration:
    - The gem is structured around client classes that handle different aspects of the ListenBrainz API

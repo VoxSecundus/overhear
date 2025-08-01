@@ -13,10 +13,28 @@ require_relative 'overhear/version'
 #   client = Overhear::UserClient.new('your_listenbrainz_token')
 #   count = client.listen_count
 #   puts "Total listens: #{count}"
+#
+# @example Using debug mode with configurable verbosity
+#   # Set debug level via environment variable
+#   # ENV['overhear_DEBUG_LEVEL'] = 'DEBUG'
+#
+#   # Or configure programmatically
+#   Overhear.logger.level = :DEBUG
+#
+#   client = Overhear::UserClient.new('your_listenbrainz_token')
+#   # Debug output will be shown based on configured level
 module Overhear
   require 'overhear/clients/client'
   require 'overhear/clients/user_client'
   require 'overhear/song'
+  require 'overhear/logger'
+
+  @logger = Logger.new
+
+  class << self
+    # @return [Overhear::Logger] the global logger instance
+    attr_reader :logger
+  end
 
   # Error raised when an invalid ListenBrainz API token is provided
   # @since 0.1.0

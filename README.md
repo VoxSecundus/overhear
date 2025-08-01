@@ -17,12 +17,60 @@ If bundler is not being used to manage dependencies, install the gem by executin
 To interact with the ListenBrainz Web API, you need a user token. Fetch one from your [account settings](https://listenbrainz.org/settings/) page. Create a user client with:
 
 ```ruby
-client = UserClient.new("<token>")
+client = Overhear::UserClient.new("<token>")
 ```
 
 `UserClient#listen_count` - Return the total listen count for a user
 
 `UserClient#now_playing` - Return the currently playing song for a user. Returns nil if no song currently playing.
+
+## Debugging
+
+Overhear includes a configurable debug system with multiple verbosity levels:
+
+- `OFF` - No debug output (default)
+- `ERROR` - Only error messages
+- `WARN` - Warnings and errors
+- `INFO` - Basic information, warnings, and errors
+- `DEBUG` - Detailed debug information
+- `TRACE` - Very detailed trace information
+
+### Setting Debug Level
+
+You can set the debug level in two ways:
+
+1. Using environment variables:
+
+```bash
+# Set specific debug level
+export overhear_DEBUG_LEVEL=DEBUG
+
+# For backward compatibility, this enables INFO level
+export overhear_DEBUG=true
+```
+
+2. Programmatically:
+
+```ruby
+# Set debug level
+Overhear.logger.level = :DEBUG
+
+# Check current level
+puts Overhear.logger.level
+```
+
+### Logging Examples
+
+```ruby
+# Configure debug level
+Overhear.logger.level = :DEBUG
+
+# Create client - will output debug information
+client = Overhear::UserClient.new("<token>")
+
+# API calls will include debug information
+now_playing = client.now_playing
+```
 
 ## Development
 
