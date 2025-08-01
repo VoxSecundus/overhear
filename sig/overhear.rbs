@@ -14,7 +14,7 @@ module Overhear
     API_ROOT: String
 
     private
-    def api_call: (String endpoint, Hash[String, String] headers) -> untyped
+    def get: (String endpoint, Hash[String, String] headers, ?Hash[Symbol, untyped] params) -> untyped
   end
 
   # Client class for user-specific actions
@@ -25,6 +25,7 @@ module Overhear
     def initialize: (String token) -> void
     def now_playing: -> Song?
     def listen_count: -> Integer
+    def listens: (?max_ts: Integer?, ?min_ts: Integer?, ?count: Integer?) -> Array[Song]
 
     private
     def user_token_valid?: -> bool
