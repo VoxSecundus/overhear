@@ -85,7 +85,7 @@ DEPENDENCIES
   rubocop
   rubocop-minitest
   rubocop-rake
-  yard (~> 0.9)
+  yard
 
 BUNDLED WITH
    2.6.9
