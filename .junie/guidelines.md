@@ -96,6 +96,9 @@ end
    - Use `InvalidTokenError` for authentication issues
    - API responses are parsed with error handling in the client classes
 
+5. AI-assisted Development:
+   - All code written with an LLM agent must use `docs/references/listenbrainz-readthedocs-io-en-latest.md` as a reference document
+
 ## Documentation
 
 ### YARD Documentation
