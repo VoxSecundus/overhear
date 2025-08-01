@@ -17,20 +17,23 @@ module Overhear
     # Makes an HTTP GET request to the ListenBrainz API
     # @param endpoint [String] the API endpoint to call
     # @param headers [Hash] HTTP headers to include in the request
+    # @param params [Hash] query parameters to include in the request
     # @return [Faraday::Response] the HTTP response
     # @api private
-    def api_call(endpoint, headers)
+    def get(endpoint, headers, params = {})
       url = API_ROOT + endpoint
       Overhear.logger.info("Making API request to: #{url}")
-      Overhear.logger.debug("Request headers: #{headers.reject { |k, _| k == 'Authorization' }}")
-      
+      Overhear.logger.debug("Request headers: #{headers.except('Authorization')}")
+      Overhear.logger.debug("Request params: #{params}") unless params.empty?
+
       response = Faraday.get(url) do |req|
         req.headers = headers
+        req.params = params unless params.empty?
       end
-      
+
       Overhear.logger.info("Response status: #{response.status}")
       Overhear.logger.trace("Response headers: #{response.headers}")
-      
+
       response
     end
   end
