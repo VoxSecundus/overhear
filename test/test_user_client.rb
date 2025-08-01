@@ -1,9 +1,10 @@
 # frozen_string_literal: true
 
 require 'test_helper'
-require 'ostruct'
 
 class TestUserClient < Minitest::Test
+  # Define a Response struct to replace OpenStruct
+  Response = Struct.new(:body)
   def test_invalid_token_raises_error
     assert_raises(Overhear::InvalidTokenError) do
       Overhear::UserClient.new('invalid_token')
@@ -15,16 +16,18 @@ class TestUserClient < Minitest::Test
     # by creating a mock class that inherits from UserClient
     mock_client_class = Class.new(Overhear::UserClient) do
       # Override initialize to skip token validation
+      # rubocop:disable Lint/MissingSuper
       def initialize
         @username = 'test_user'
         @user_token = 'valid_token'
       end
+      # rubocop:enable Lint/MissingSuper
 
       # Mock the get method
       def get(_endpoint, _headers, _params = {})
         # Return a mock response object with a body method
-        OpenStruct.new(
-          body: {
+        Response.new(
+          {
             payload: {
               count: 1,
               listens: [
