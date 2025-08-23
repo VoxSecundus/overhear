@@ -5,6 +5,7 @@ source 'https://rubygems.org'
 # Specify your gem's dependencies in overhear.gemspec
 gemspec
 
+gem 'logger'
 gem 'minitest'
 gem 'rake'
 

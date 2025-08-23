@@ -35,6 +35,7 @@ GEM
     json (2.13.2)
     language_server-protocol (3.17.0.5)
     lint_roller (1.1.0)
+    logger (1.6.4)
     minitest (5.25.5)
     multipart-post (2.4.1)
     parallel (1.27.0)
@@ -45,8 +46,8 @@ GEM
     racc (1.8.1)
     rainbow (3.1.1)
     rake (13.3.0)
-    regexp_parser (2.10.0)
-    rubocop (1.79.1)
+    regexp_parser (2.11.2)
+    rubocop (1.80.0)
       json (~> 2.3)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.1.0)
@@ -69,7 +70,7 @@ GEM
       rubocop (>= 1.72.1)
     ruby-progressbar (1.13.0)
     ruby2_keywords (0.0.5)
-    unicode-display_width (3.1.4)
+    unicode-display_width (3.1.5)
       unicode-emoji (~> 4.0, >= 4.0.4)
     unicode-emoji (4.0.4)
     yard (0.9.37)
@@ -79,6 +80,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  logger
   minitest
   overhear!
   rake
@@ -88,4 +90,4 @@ DEPENDENCIES
   yard
 
 BUNDLED WITH
-   2.6.9
+   2.7.1
