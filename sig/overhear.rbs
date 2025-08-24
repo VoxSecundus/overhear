@@ -43,6 +43,10 @@ module Overhear
     def listens: (?max_ts: Integer?, ?min_ts: Integer?, ?count: Integer?) -> Array[Song]
   end
 
+  # Client class for actions related to listens
+  class ListenClient < AuthenticatableClient
+  end
+
   # Class to represent a single song in the ListenBrainz database
   class Song
     attr_reader artist_names: Array[String]
