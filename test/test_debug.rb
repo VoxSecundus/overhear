@@ -56,6 +56,7 @@ class TestDebug < Minitest::Test
     logger.debug('Test debug message')
 
     output = @captured_output.string
+
     assert_includes output, '[Overhear][ERROR] Test error message'
     refute_includes output, '[Overhear][INFO] Test info message'
     refute_includes output, '[Overhear][DEBUG] Test debug message'
@@ -71,6 +72,7 @@ class TestDebug < Minitest::Test
     logger.debug('Test debug message')
 
     output = @captured_output.string
+
     assert_includes output, '[Overhear][ERROR] Test error message'
     assert_includes output, '[Overhear][INFO] Test info message'
     refute_includes output, '[Overhear][DEBUG] Test debug message'
@@ -87,6 +89,7 @@ class TestDebug < Minitest::Test
     logger.trace('Test trace message')
 
     output = @captured_output.string
+
     assert_includes output, '[Overhear][ERROR] Test error message'
     assert_includes output, '[Overhear][INFO] Test info message'
     assert_includes output, '[Overhear][DEBUG] Test debug message'
@@ -104,6 +107,7 @@ class TestDebug < Minitest::Test
     logger.trace('Test trace message')
 
     output = @captured_output.string
+
     assert_includes output, '[Overhear][ERROR] Test error message'
     assert_includes output, '[Overhear][INFO] Test info message'
     assert_includes output, '[Overhear][DEBUG] Test debug message'
@@ -126,6 +130,7 @@ class TestDebug < Minitest::Test
     logger.info('Test info message')
 
     output = @captured_output.string
+
     assert_includes output, '[Overhear][ERROR] Test error message'
     assert_includes output, '[Overhear][WARN] Test warn message'
     refute_includes output, '[Overhear][INFO] Test info message'

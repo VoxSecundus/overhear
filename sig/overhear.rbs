@@ -39,12 +39,12 @@ module Overhear
   # Client class for user-specific actions
   class UserClient < AuthenticatableClient
     def now_playing: -> Song?
-    def listen_count: -> Integer
-    def listens: (?max_ts: Integer?, ?min_ts: Integer?, ?count: Integer?) -> Array[Song]
   end
 
   # Client class for actions related to listens
   class ListenClient < AuthenticatableClient
+    def listen_count: -> Integer
+    def listens: (?max_ts: Integer?, ?min_ts: Integer?, ?count: Integer?) -> Array[Song]
   end
 
   # Class to represent a single song in the ListenBrainz database

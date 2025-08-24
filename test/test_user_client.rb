@@ -3,15 +3,13 @@
 require 'test_helper'
 
 class TestUserClient < Minitest::Test
-  # Define a Response struct to replace OpenStruct
-  Response = Struct.new(:body)
   def test_invalid_token_raises_error
     assert_raises(Overhear::InvalidTokenError) do
       Overhear::UserClient.new('invalid_token')
     end
   end
 
-  def test_listens_method
+  def test_now_playing_method
     # Skip the actual initialisation and token validation
     # by creating a mock class that inherits from UserClient
     mock_client_class = Class.new(Overhear::UserClient) do
@@ -53,26 +51,12 @@ class TestUserClient < Minitest::Test
     # Create an instance of our mock class
     client = mock_client_class.new
 
-    # Test with no parameters
-    result = client.listens
-    assert_instance_of Array, result
-    assert_instance_of Overhear::Song, result.first if result.any?
+    # Test now_playing method
+    result = client.now_playing
 
-    # Test with max_ts parameter
-    result = client.listens(max_ts: 1_596_234_567)
-    assert_instance_of Array, result
-
-    # Test with min_ts parameter
-    result = client.listens(min_ts: 1_596_234_567)
-    assert_instance_of Array, result
-
-    # Test with count parameter
-    result = client.listens(count: 10)
-    assert_instance_of Array, result
-
-    # Test that it raises an error when both max_ts and min_ts are provided
-    assert_raises(ArgumentError) do
-      client.listens(max_ts: 1_596_234_567, min_ts: 1_596_234_567)
-    end
+    assert_instance_of Overhear::Song, result
+    assert_equal 'Test Track', result.name
+    assert_equal ['Test Artist'], result.artist_names
+    assert_equal 'Test Album', result.release_name
   end
 end
