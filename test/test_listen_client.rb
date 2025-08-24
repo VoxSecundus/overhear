@@ -6,7 +6,7 @@ class TestListenClient < Minitest::Test
   def test_invalid_token_raises_error
     # Mock the invalid token response
     stub_invalid_token('invalid_token')
-    
+
     assert_raises(Overhear::InvalidTokenError) do
       Overhear::ListenClient.new('invalid_token')
     end
@@ -17,21 +17,7 @@ class TestListenClient < Minitest::Test
     stub_token_validation('valid_token')
 
     # Mock the listen count API request
-    stub_request(:get, "#{Overhear::Client::API_ROOT}/1/user/test_user/listen-count")
-      .with(
-        headers: {
-          'Authorization' => 'Token valid_token'
-        }
-      )
-      .to_return(
-        status: 200,
-        body: {
-          payload: {
-            count: 42
-          }
-        }.to_json,
-        headers: { 'Content-Type' => 'application/json' }
-      )
+    stub_listen_count('valid_token')
 
     # Create a real client instance
     client = Overhear::ListenClient.new('valid_token')
@@ -44,81 +30,13 @@ class TestListenClient < Minitest::Test
     # Mock the token validation request
     stub_token_validation('valid_token')
 
-    # Create a standard response body for listens
-    listen_response = {
-      payload: {
-        count: 1,
-        listens: [
-          {
-            listened_at: Time.now.to_i,
-            track_metadata: {
-              track_name: 'Test Track',
-              release_name: 'Test Album',
-              additional_info: {
-                artist_names: ['Test Artist'],
-                isrc: 'USRC12345678',
-                duration_ms: 240_000
-              }
-            }
-          }
-        ]
-      }
-    }.to_json
+    # Use the standard response body for listens from the helper
 
-    # Mock the listens API request with no parameters
-    stub_request(:get, "#{Overhear::Client::API_ROOT}/1/user/test_user/listens")
-      .with(
-        headers: {
-          'Authorization' => 'Token valid_token'
-        }
-      )
-      .to_return(
-        status: 200,
-        body: listen_response,
-        headers: { 'Content-Type' => 'application/json' }
-      )
-
-    # Mock the listens API request with max_ts parameter
-    stub_request(:get, "#{Overhear::Client::API_ROOT}/1/user/test_user/listens")
-      .with(
-        headers: {
-          'Authorization' => 'Token valid_token'
-        },
-        query: { 'max_ts' => '1596234567' }
-      )
-      .to_return(
-        status: 200,
-        body: listen_response,
-        headers: { 'Content-Type' => 'application/json' }
-      )
-
-    # Mock the listens API request with min_ts parameter
-    stub_request(:get, "#{Overhear::Client::API_ROOT}/1/user/test_user/listens")
-      .with(
-        headers: {
-          'Authorization' => 'Token valid_token'
-        },
-        query: { 'min_ts' => '1596234567' }
-      )
-      .to_return(
-        status: 200,
-        body: listen_response,
-        headers: { 'Content-Type' => 'application/json' }
-      )
-
-    # Mock the listens API request with count parameter
-    stub_request(:get, "#{Overhear::Client::API_ROOT}/1/user/test_user/listens")
-      .with(
-        headers: {
-          'Authorization' => 'Token valid_token'
-        },
-        query: { 'count' => '10' }
-      )
-      .to_return(
-        status: 200,
-        body: listen_response,
-        headers: { 'Content-Type' => 'application/json' }
-      )
+    # Mock the listens API requests with different parameters
+    stub_listens('valid_token')
+    stub_listens('valid_token', query_params: { 'max_ts' => '1596234567' })
+    stub_listens('valid_token', query_params: { 'min_ts' => '1596234567' })
+    stub_listens('valid_token', query_params: { 'count' => '10' })
 
     # Create a real client instance
     client = Overhear::ListenClient.new('valid_token')

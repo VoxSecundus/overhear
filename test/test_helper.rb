@@ -36,6 +36,106 @@ def stub_invalid_token(token)
   stub_token_validation(token, valid: false)
 end
 
+# Helper method to create standard authorization headers
+# @param token [String] the token to use for authorization
+# @return [Hash] headers hash with Authorization
+def auth_headers(token)
+  {
+    'Authorization' => "Token #{token}"
+  }
+end
+
+# Helper method to create standard JSON response headers
+# @return [Hash] headers hash with Content-Type
+def json_headers
+  { 'Content-Type' => 'application/json' }
+end
+
+# Helper method to stub listen count API request
+# @param token [String] the token to use for authorization
+# @param username [String] the username to get listen count for
+# @param count [Integer] the count to return in the response
+# @return [WebMock::StubRegistry::Stub] the created stub
+def stub_listen_count(token, username: 'test_user', count: 42)
+  stub_request(:get, "#{Overhear::Client::API_ROOT}/1/user/#{username}/listen-count")
+    .with(headers: auth_headers(token))
+    .to_return(
+      status: 200,
+      body: {
+        payload: {
+          count: count
+        }
+      }.to_json,
+      headers: json_headers
+    )
+end
+
+# Helper method to create a standard listen response body
+# @param track_name [String] the name of the track
+# @param artist_names [Array<String>] the names of the artists
+# @param release_name [String] the name of the release/album
+# @param isrc [String] the ISRC code
+# @param duration_ms [Integer] the duration in milliseconds
+# @return [String] JSON string of the response body
+def listen_response_body(track_name: 'Test Track', artist_names: ['Test Artist'],
+                         release_name: 'Test Album', isrc: 'USRC12345678', duration_ms: 240_000)
+  {
+    payload: {
+      count: 1,
+      listens: [
+        {
+          listened_at: Time.now.to_i,
+          track_metadata: {
+            track_name: track_name,
+            release_name: release_name,
+            additional_info: {
+              artist_names: artist_names,
+              isrc: isrc,
+              duration_ms: duration_ms
+            }
+          }
+        }
+      ]
+    }
+  }.to_json
+end
+
+# Helper method to stub listens API request
+# @param token [String] the token to use for authorization
+# @param username [String] the username to get listens for
+# @param query_params [Hash] optional query parameters
+# @param response_body [String] optional custom response body
+# @return [WebMock::StubRegistry::Stub] the created stub
+def stub_listens(token, username: 'test_user', query_params: {}, response_body: nil)
+  request = stub_request(:get, "#{Overhear::Client::API_ROOT}/1/user/#{username}/listens")
+            .with(headers: auth_headers(token))
+
+  # Add query parameters if provided
+  request = request.with(query: query_params) unless query_params.empty?
+
+  # Return the response
+  request.to_return(
+    status: 200,
+    body: response_body || listen_response_body,
+    headers: json_headers
+  )
+end
+
+# Helper method to stub now playing API request
+# @param token [String] the token to use for authorization
+# @param username [String] the username to get now playing for
+# @param response_body [String] optional custom response body
+# @return [WebMock::StubRegistry::Stub] the created stub
+def stub_now_playing(token, username: 'test_user', response_body: nil)
+  stub_request(:get, "#{Overhear::Client::API_ROOT}/1/user/#{username}/playing-now")
+    .with(headers: auth_headers(token))
+    .to_return(
+      status: 200,
+      body: response_body || listen_response_body,
+      headers: json_headers
+    )
+end
+
 # Simple Response class for testing
 class Response
   attr_reader :body
