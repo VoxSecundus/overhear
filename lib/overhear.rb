@@ -32,7 +32,23 @@ module Overhear
   @logger = Logger.new
 
   class << self
+    # The global logger instance used throughout the gem for logging messages
+    # with configurable verbosity levels.
+    #
+    # The logger can be configured either through environment variables or
+    # programmatically. By default, logging is turned off (level: OFF).
+    #
     # @return [Overhear::Logger] the global logger instance
+    # @see Overhear::Logger
+    # @example Setting log level programmatically
+    #   Overhear.logger.level = :DEBUG
+    # @example Setting log level via environment variable
+    #   # ENV['overhear_DEBUG_LEVEL'] = 'DEBUG'
+    # @example Logging messages at different levels
+    #   Overhear.logger.info("Operation completed")
+    #   Overhear.logger.debug("Debug information")
+    #   Overhear.logger.error("An error occurred")
+    # @since 0.1.0
     attr_reader :logger
   end
 

@@ -1,7 +1,12 @@
 module Overhear
   VERSION: String
   
+  # The global logger instance used throughout the gem for logging messages
+  # with configurable verbosity levels.
+  #
   # @return [Overhear::Logger] the global logger instance
+  # @see Overhear::Logger
+  # @since 0.1.0
   def self.logger: -> Logger
   
   # Error class for invalid ListenBrainz API token
