@@ -4,52 +4,51 @@ require 'test_helper'
 
 class TestUserClient < Minitest::Test
   def test_invalid_token_raises_error
+    # Mock the invalid token response
+    stub_invalid_token('invalid_token')
+    
     assert_raises(Overhear::InvalidTokenError) do
       Overhear::UserClient.new('invalid_token')
     end
   end
 
   def test_now_playing_method
-    # Skip the actual initialisation and token validation
-    # by creating a mock class that inherits from UserClient
-    mock_client_class = Class.new(Overhear::UserClient) do
-      # Override initialize to skip token validation
-      # rubocop:disable Lint/MissingSuper
-      def initialize
-        @username = 'test_user'
-        @token = 'valid_token'
-      end
-      # rubocop:enable Lint/MissingSuper
+    # Mock the token validation request
+    stub_token_validation('valid_token')
 
-      # Mock the get method
-      def get(_endpoint, _headers, _params = {})
-        # Return a mock response object with a body method
-        Response.new(
-          {
-            payload: {
-              count: 1,
-              listens: [
-                {
-                  listened_at: Time.now.to_i,
-                  track_metadata: {
-                    track_name: 'Test Track',
-                    release_name: 'Test Album',
-                    additional_info: {
-                      artist_names: ['Test Artist'],
-                      isrc: 'USRC12345678',
-                      duration_ms: 240_000
-                    }
+    # Mock the now_playing API request
+    stub_request(:get, "#{Overhear::Client::API_ROOT}/1/user/test_user/playing-now")
+      .with(
+        headers: {
+          'Authorization' => 'Token valid_token'
+        }
+      )
+      .to_return(
+        status: 200,
+        body: {
+          payload: {
+            count: 1,
+            listens: [
+              {
+                listened_at: Time.now.to_i,
+                track_metadata: {
+                  track_name: 'Test Track',
+                  release_name: 'Test Album',
+                  additional_info: {
+                    artist_names: ['Test Artist'],
+                    isrc: 'USRC12345678',
+                    duration_ms: 240_000
                   }
                 }
-              ]
-            }
-          }.to_json
-        )
-      end
-    end
+              }
+            ]
+          }
+        }.to_json,
+        headers: { 'Content-Type' => 'application/json' }
+      )
 
-    # Create an instance of our mock class
-    client = mock_client_class.new
+    # Create a real client instance
+    client = Overhear::UserClient.new('valid_token')
 
     # Test now_playing method
     result = client.now_playing
