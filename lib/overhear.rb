@@ -25,6 +25,7 @@ require_relative 'overhear/version'
 #   # Debug output will be shown based on configured level
 module Overhear
   require 'overhear/clients/client'
+  require 'overhear/clients/authenticatable_client'
   require 'overhear/clients/user_client'
   require 'overhear/song'
   require 'overhear/logger'

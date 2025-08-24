@@ -12,14 +12,14 @@ class TestUserClient < Minitest::Test
   end
 
   def test_listens_method
-    # Skip the actual initialization and token validation
+    # Skip the actual initialisation and token validation
     # by creating a mock class that inherits from UserClient
     mock_client_class = Class.new(Overhear::UserClient) do
       # Override initialize to skip token validation
       # rubocop:disable Lint/MissingSuper
       def initialize
         @username = 'test_user'
-        @user_token = 'valid_token'
+        @token = 'valid_token'
       end
       # rubocop:enable Lint/MissingSuper
 

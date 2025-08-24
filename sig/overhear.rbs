@@ -22,21 +22,25 @@ module Overhear
     def get: (String endpoint, Hash[String, String] headers, ?Hash[Symbol, untyped] params) -> untyped
   end
 
-  # Client class for user-specific actions
-  class UserClient < Client
+  # Base client class for authenticated API actions
+  # @since 0.1.0
+  class AuthenticatableClient < Client
     attr_reader username: String
-    attr_reader user_token: String
+    attr_reader token: String
 
     def initialize: (String token) -> void
+
+    private
+    def default_headers: -> Hash[String, String]
+    def validate_user_token: -> Hash[String, untyped]
+    def parse_response: (untyped response) -> Hash[String, untyped]
+  end
+
+  # Client class for user-specific actions
+  class UserClient < AuthenticatableClient
     def now_playing: -> Song?
     def listen_count: -> Integer
     def listens: (?max_ts: Integer?, ?min_ts: Integer?, ?count: Integer?) -> Array[Song]
-
-    private
-    def user_token_valid?: -> bool
-    def parse_response: (untyped response) -> Hash[String, untyped]
-    def default_headers: -> Hash[String, String]
-    def validate_user_token: -> Hash[String, untyped]
   end
 
   # Class to represent a single song in the ListenBrainz database
