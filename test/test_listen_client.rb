@@ -5,7 +5,7 @@ require 'test_helper'
 class TestListenClient < Minitest::Test
   def test_invalid_token_raises_error
     # Mock the invalid token response
-    stub_invalid_token('invalid_token')
+    stub_token_validation('invalid_token', valid: false)
 
     assert_raises(Overhear::InvalidTokenError) do
       Overhear::ListenClient.new('invalid_token')
