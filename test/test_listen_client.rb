@@ -4,82 +4,42 @@ require 'test_helper'
 
 class TestListenClient < Minitest::Test
   def test_invalid_token_raises_error
+    # Mock the invalid token response
+    stub_token_validation('invalid_token', valid: false)
+
     assert_raises(Overhear::InvalidTokenError) do
       Overhear::ListenClient.new('invalid_token')
     end
   end
 
   def test_listen_count
-    # Create a mock client
-    mock_client_class = Class.new(Overhear::ListenClient) do
-      # Override initialize to skip token validation
-      # rubocop:disable Lint/MissingSuper
-      def initialize
-        @username = 'test_user'
-        @token = 'valid_token'
-      end
-      # rubocop:enable Lint/MissingSuper
+    # Mock the token validation request
+    stub_token_validation('valid_token')
 
-      # Mock the get method
-      def get(_endpoint, _headers, _params = {})
-        # Return a mock response object with a body method
-        Response.new(
-          {
-            payload: {
-              count: 42
-            }
-          }.to_json
-        )
-      end
-    end
+    # Mock the listen count API request
+    stub_listen_count('valid_token')
 
-    # Create an instance of our mock class
-    client = mock_client_class.new
+    # Create a real client instance
+    client = Overhear::ListenClient.new('valid_token')
 
     # Test the listen_count method
     assert_equal 42, client.listen_count
   end
 
   def test_listens
-    # Create a mock client
-    mock_client_class = Class.new(Overhear::ListenClient) do
-      # Override initialize to skip token validation
-      # rubocop:disable Lint/MissingSuper
-      def initialize
-        @username = 'test_user'
-        @token = 'valid_token'
-      end
-      # rubocop:enable Lint/MissingSuper
+    # Mock the token validation request
+    stub_token_validation('valid_token')
 
-      # Mock the get method
-      def get(_endpoint, _headers, _params = {})
-        # Return a mock response object with a body method
-        Response.new(
-          {
-            payload: {
-              count: 1,
-              listens: [
-                {
-                  listened_at: Time.now.to_i,
-                  track_metadata: {
-                    track_name: 'Test Track',
-                    release_name: 'Test Album',
-                    additional_info: {
-                      artist_names: ['Test Artist'],
-                      isrc: 'USRC12345678',
-                      duration_ms: 240_000
-                    }
-                  }
-                }
-              ]
-            }
-          }.to_json
-        )
-      end
-    end
+    # Use the standard response body for listens from the helper
 
-    # Create an instance of our mock class
-    client = mock_client_class.new
+    # Mock the listens API requests with different parameters
+    stub_listens('valid_token')
+    stub_listens('valid_token', query_params: { 'max_ts' => '1596234567' })
+    stub_listens('valid_token', query_params: { 'min_ts' => '1596234567' })
+    stub_listens('valid_token', query_params: { 'count' => '10' })
+
+    # Create a real client instance
+    client = Overhear::ListenClient.new('valid_token')
 
     # Test with no parameters
     result = client.listens
