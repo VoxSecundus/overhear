@@ -24,8 +24,8 @@ module Overhear
       token_validation = validate_user_token
       raise InvalidTokenError unless token_validation['valid']
 
-      Overhear.logger.info("#{self.class.name} initialized for user: #{@username}")
       @username = token_validation['user_name']
+      Overhear.logger.info("#{self.class.name} initialized for user: #{@username}")
     end
 
     # Generates the default headers for API requests
