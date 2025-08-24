@@ -86,6 +86,7 @@ end
    - Update `sig/overhear.rbs` with RBS style signatures
    - Always run RuboCop autocorrect on file save
    - Use British English spelling
+   - Mock API responses with `webmock`
 
 3. API Integration:
    - The gem is structured around client classes that handle different aspects of the ListenBrainz API
