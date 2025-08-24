@@ -21,7 +21,7 @@ module Overhear
     # @return [Faraday::Response] the HTTP response
     # @api private
     def get(endpoint, headers, params = {})
-      url = API_ROOT + endpoint
+      url = URI.join(API_ROOT, endpoint)
       Overhear.logger.info("Making API request to: #{url}")
       Overhear.logger.debug("Request headers: #{headers.except('Authorization')}")
       Overhear.logger.debug("Request params: #{params}") unless params.empty?
