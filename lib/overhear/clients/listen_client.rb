@@ -5,8 +5,9 @@ module Overhear
     # Submits listens to the ListenBrainz server
     # @param listen_type [String] the type of listen submission ('single', 'playing_now', or 'import')
     # @param listens [Array<Hash>] array of listen data to submit
-    # @return [Boolean] true if submission was successful
+    # @return [Hash] the parsed response body from ListenBrainz on success
     # @raise [ArgumentError] if listen_type is invalid or listens is empty
+    # @raise [StandardError] if the API returns a non-success status
     # @example Submit a single listen
     #   client.submit_listens('single', [{
     #     listened_at: Time.now.to_i,
@@ -39,10 +40,12 @@ module Overhear
 
       if response.status == 200
         Overhear.logger.info("Successfully submitted #{listens.size} listens")
-        true
+        # Return parsed response instead of boolean to avoid predicate semantics
+        parse_response(response)
       else
         Overhear.logger.error("Failed to submit listens: #{response.status}")
-        false
+        # Raise an error to signal failure rather than returning false
+        raise StandardError, "Submit listens failed with status #{response.status}"
       end
     end
 
