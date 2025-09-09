@@ -45,6 +45,42 @@ def auth_headers(token)
   }
 end
 
+# Helper to stub GET /1/latest-import
+# @param token [String]
+# @param username [String]
+# @param latest_import [Integer]
+# @return [WebMock::StubRegistry::Stub]
+def stub_latest_import_get(token, username: 'test_user', latest_import: 0)
+  stub_request(:get, "#{Overhear::Client::API_ROOT}/1/latest-import")
+    .with(headers: auth_headers(token), query: { 'user_name' => username })
+    .to_return(
+      status: 200,
+      body: {
+        musicbrainz_id: username,
+        latest_import: latest_import
+      }.to_json,
+      headers: json_headers
+    )
+end
+
+# Helper to stub POST /1/latest-import
+# @param token [String]
+# @param timestamp [Integer]
+# @param status [Integer]
+# @return [WebMock::StubRegistry::Stub]
+def stub_latest_import_post(token, timestamp:, status: 200)
+  stub_request(:post, "#{Overhear::Client::API_ROOT}/1/latest-import")
+    .with(
+      headers: auth_headers(token).merge('Content-Type' => 'application/json'),
+      body: { ts: timestamp }.to_json
+    )
+    .to_return(
+      status: status,
+      body: (status == 200 ? { status: 'ok' } : { status: 'error' }).to_json,
+      headers: json_headers
+    )
+end
+
 # Helper method to create standard JSON response headers
 # @return [Hash] headers hash with Content-Type
 def json_headers

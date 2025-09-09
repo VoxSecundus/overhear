@@ -225,4 +225,33 @@ class TestListenClient < Minitest::Test
       client.listens(max_ts: 1_596_234_567, min_ts: 1_596_234_567)
     end
   end
+
+  def test_latest_import_get_default_user
+    stub_token_validation('valid_token')
+    stub_latest_import_get('valid_token', username: 'test_user', latest_import: 12_345)
+
+    client = Overhear::ListenClient.new('valid_token')
+
+    assert_equal 12_345, client.latest_import
+  end
+
+  def test_update_latest_import_post
+    stub_token_validation('valid_token')
+    timestamp = 1_700_000_000
+    stub_latest_import_post('valid_token', timestamp: timestamp, status: 200)
+
+    client = Overhear::ListenClient.new('valid_token')
+
+    assert client.update_latest_import(timestamp)
+  end
+
+  def test_update_latest_import_unauthorized_raises
+    stub_token_validation('valid_token')
+    timestamp = 1_700_000_001
+    stub_latest_import_post('valid_token', timestamp: timestamp, status: 401)
+
+    client = Overhear::ListenClient.new('valid_token')
+
+    assert_raises(Overhear::InvalidTokenError) { client.update_latest_import(timestamp) }
+  end
 end
