@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module Overhear
+  # rubocop:disable Metrics/ClassLength
+  # This class aggregates several ListenBrainz endpoints; its length is acceptable for now.
   class ListenClient < AuthenticatableClient
     # Submits listens to the ListenBrainz server
     # @param listen_type [String] the type of listen submission ('single', 'playing_now', or 'import')
@@ -247,5 +249,6 @@ module Overhear
 
       Overhear.logger.info('Listen submission validation passed')
     end
+    # rubocop:enable Metrics/ClassLength
   end
 end
