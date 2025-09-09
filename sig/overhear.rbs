@@ -46,6 +46,7 @@ module Overhear
     def listen_count: -> Integer
     def listens: (?max_ts: Integer?, ?min_ts: Integer?, ?count: Integer?) -> Array[Song]
     def submit_listens: (String listen_type, Array[Hash[String | Symbol, untyped]] listens) -> Hash[String, untyped]
+    def delete_listen: (listened_at: Integer, recording_msid: String) -> Hash[String, untyped]
   end
 
   # Class to represent a single song in the ListenBrainz database

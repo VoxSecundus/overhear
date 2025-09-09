@@ -160,6 +160,30 @@ def stub_submit_listens(token, listen_type: 'single', listens: [], status: 200)
     )
 end
 
+# Helper method to stub delete-listen API request
+# @param token [String] the token to use for authorisation
+# @param listened_at [Integer] the UNIX timestamp of the listen to delete
+# @param recording_msid [String] the recording MSID of the listen to delete
+# @param status [Integer] the HTTP status code to return
+# @return [WebMock::StubRegistry::Stub] the created stub
+def stub_delete_listen(token, listened_at:, recording_msid:, status: 200)
+  expected_body = {
+    listened_at: listened_at,
+    recording_msid: recording_msid
+  }
+
+  stub_request(:post, "#{Overhear::Client::API_ROOT}/1/delete-listen")
+    .with(
+      headers: auth_headers(token).merge('Content-Type' => 'application/json'),
+      body: expected_body.to_json
+    )
+    .to_return(
+      status: status,
+      body: { status: status == 200 ? 'ok' : 'error' }.to_json,
+      headers: json_headers
+    )
+end
+
 # Simple Response class for testing
 class Response
   attr_reader :body
