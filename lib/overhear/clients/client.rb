@@ -36,5 +36,30 @@ module Overhear
 
       response
     end
+
+    # Makes an HTTP POST request to the ListenBrainz API
+    # @param endpoint [String] the API endpoint to call
+    # @param headers [Hash] HTTP headers to include in the request
+    # @param body [Hash] the JSON body to include in the request
+    # @return [Faraday::Response] the HTTP response
+    # @api private
+    def post(endpoint, headers, body)
+      url = URI.join(API_ROOT, endpoint)
+      Overhear.logger.info("Making API POST request to: #{url}")
+      Overhear.logger.debug("Request headers: #{headers.except('Authorization')}")
+      Overhear.logger.debug("Request body: #{body}")
+
+      headers['Content-Type'] = 'application/json'
+
+      response = Faraday.post(url) do |req|
+        req.headers = headers
+        req.body = JSON.generate(body)
+      end
+
+      Overhear.logger.info("Response status: #{response.status}")
+      Overhear.logger.trace("Response headers: #{response.headers}")
+
+      response
+    end
   end
 end

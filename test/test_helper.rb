@@ -136,6 +136,30 @@ def stub_now_playing(token, username: 'test_user', response_body: nil)
     )
 end
 
+# Helper method to stub submit-listens API request
+# @param token [String] the token to use for authorization
+# @param listen_type [String] the type of listen submission ('single', 'playing_now', or 'import')
+# @param listens [Array<Hash>] array of listen data being submitted
+# @param status [Integer] the HTTP status code to return
+# @return [WebMock::StubRegistry::Stub] the created stub
+def stub_submit_listens(token, listen_type: 'single', listens: [], status: 200)
+  expected_body = {
+    listen_type: listen_type,
+    payload: listens
+  }
+
+  stub_request(:post, "#{Overhear::Client::API_ROOT}/1/submit-listens")
+    .with(
+      headers: auth_headers(token).merge('Content-Type' => 'application/json'),
+      body: expected_body.to_json
+    )
+    .to_return(
+      status: status,
+      body: { status: status == 200 ? 'ok' : 'error' }.to_json,
+      headers: json_headers
+    )
+end
+
 # Simple Response class for testing
 class Response
   attr_reader :body
