@@ -254,4 +254,59 @@ class TestListenClient < Minitest::Test
 
     assert_raises(Overhear::InvalidTokenError) { client.update_latest_import(timestamp) }
   end
+
+  # Tests for delete-listen endpoint
+  def test_delete_listen_success
+    stub_token_validation('valid_token')
+
+    listened_at = Time.now.to_i - 123
+    recording_msid = 'd23f4719-9212-49f0-ad08-ddbfbfc50d6f'
+
+    stub_delete_listen('valid_token', listened_at: listened_at, recording_msid: recording_msid)
+
+    client = Overhear::ListenClient.new('valid_token')
+
+    result = client.delete_listen(listened_at: listened_at, recording_msid: recording_msid)
+
+    assert_equal 'ok', result['status'], 'Expected delete_listen to return parsed response with status ok'
+  end
+
+  def test_delete_listen_failure
+    stub_token_validation('valid_token')
+
+    listened_at = Time.now.to_i - 456
+    recording_msid = 'e33f4719-9212-49f0-ad08-ddbfbfc50d6f'
+
+    stub_delete_listen('valid_token', listened_at: listened_at, recording_msid: recording_msid, status: 400)
+
+    client = Overhear::ListenClient.new('valid_token')
+
+    assert_raises(StandardError) do
+      client.delete_listen(listened_at: listened_at, recording_msid: recording_msid)
+    end
+  end
+
+  def test_delete_listen_invalid_args
+    stub_token_validation('valid_token')
+
+    client = Overhear::ListenClient.new('valid_token')
+
+    # Missing listened_at
+    assert_raises(ArgumentError) do
+      client.delete_listen(listened_at: nil, recording_msid: 'abc')
+    end
+
+    # Missing recording_msid
+    assert_raises(ArgumentError) do
+      client.delete_listen(listened_at: Time.now.to_i, recording_msid: nil)
+    end
+
+    # Wrong types
+    assert_raises(ArgumentError) do
+      client.delete_listen(listened_at: 'not-an-integer', recording_msid: 'abc')
+    end
+    assert_raises(ArgumentError) do
+      client.delete_listen(listened_at: Time.now.to_i, recording_msid: '')
+    end
+  end
 end

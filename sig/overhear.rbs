@@ -48,6 +48,7 @@ module Overhear
     def submit_listens: (String listen_type, Array[Hash[String | Symbol, untyped]] listens) -> Hash[String, untyped]
     def latest_import: (?user_name: String?) -> Integer
     def update_latest_import: (Integer timestamp) -> bool
+    def delete_listen: (listened_at: Integer, recording_msid: String) -> Hash[String, untyped]
   end
 
   # Class to represent a single song in the ListenBrainz database
