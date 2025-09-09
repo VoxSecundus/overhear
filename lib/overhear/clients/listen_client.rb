@@ -119,16 +119,7 @@ module Overhear
     def delete_listen(listened_at:, recording_msid:)
       Overhear.logger.info('Deleting listen')
 
-      # Validate inputs
-      if listened_at.nil? || !listened_at.is_a?(Integer) || listened_at <= 0
-        Overhear.logger.error('Invalid listened_at for delete_listen')
-        raise ArgumentError, 'listened_at must be a positive Integer'
-      end
-
-      if recording_msid.nil? || !recording_msid.is_a?(String) || recording_msid.strip.empty?
-        Overhear.logger.error('Invalid recording_msid for delete_listen')
-        raise ArgumentError, 'recording_msid must be a non-empty String'
-      end
+      validate_delete_listen_params(listened_at, recording_msid)
 
       body = {
         listened_at: listened_at,
@@ -147,6 +138,38 @@ module Overhear
     end
 
     private
+
+    # Validates parameters for delete_listen method
+    # @param listened_at [Integer] the UNIX timestamp to validate
+    # @param recording_msid [String] the recording MSID to validate
+    # @raise [ArgumentError] if parameters are missing or invalid
+    # @api private
+    def validate_delete_listen_params(listened_at, recording_msid)
+      validate_listened_at(listened_at)
+      validate_recording_msid(recording_msid)
+    end
+
+    # Validates the listened_at parameter
+    # @param listened_at [Integer] the UNIX timestamp to validate
+    # @raise [ArgumentError] if listened_at is invalid
+    # @api private
+    def validate_listened_at(listened_at)
+      return unless listened_at.nil? || !listened_at.is_a?(Integer) || listened_at <= 0
+
+      Overhear.logger.error('Invalid listened_at for delete_listen')
+      raise ArgumentError, 'listened_at must be a positive Integer'
+    end
+
+    # Validates the recording_msid parameter
+    # @param recording_msid [String] the recording MSID to validate
+    # @raise [ArgumentError] if recording_msid is invalid
+    # @api private
+    def validate_recording_msid(recording_msid)
+      return unless recording_msid.nil? || !recording_msid.is_a?(String) || recording_msid.strip.empty?
+
+      Overhear.logger.error('Invalid recording_msid for delete_listen')
+      raise ArgumentError, 'recording_msid must be a non-empty String'
+    end
 
     # Validates the listen submission parameters
     # @param listen_type [String] the type of listen submission
