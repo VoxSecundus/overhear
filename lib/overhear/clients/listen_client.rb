@@ -2,6 +2,50 @@
 
 module Overhear
   class ListenClient < AuthenticatableClient
+    # Submits listens to the ListenBrainz server
+    # @param listen_type [String] the type of listen submission ('single', 'playing_now', or 'import')
+    # @param listens [Array<Hash>] array of listen data to submit
+    # @return [Boolean] true if submission was successful
+    # @raise [ArgumentError] if listen_type is invalid or listens is empty
+    # @example Submit a single listen
+    #   client.submit_listens('single', [{
+    #     listened_at: Time.now.to_i,
+    #     track_metadata: {
+    #       artist_name: 'Rick Astley',
+    #       track_name: 'Never Gonna Give You Up',
+    #       release_name: 'Whenever You Need Somebody'
+    #     }
+    #   }])
+    #
+    # @example Submit a playing_now notification
+    #   client.submit_listens('playing_now', [{
+    #     track_metadata: {
+    #       artist_name: 'Rick Astley',
+    #       track_name: 'Never Gonna Give You Up',
+    #       release_name: 'Whenever You Need Somebody'
+    #     }
+    #   }])
+    def submit_listens(listen_type, listens)
+      Overhear.logger.info("Submitting #{listen_type} listens")
+
+      validate_listen_submission(listen_type, listens)
+
+      body = {
+        listen_type: listen_type,
+        payload: listens
+      }
+
+      response = post('/1/submit-listens', default_headers, body)
+
+      if response.status == 200
+        Overhear.logger.info("Successfully submitted #{listens.size} listens")
+        true
+      else
+        Overhear.logger.error("Failed to submit listens: #{response.status}")
+        false
+      end
+    end
+
     # Gets the total number of listens for the user
     # @return [Integer] the total number of listens
     # @example
@@ -58,6 +102,38 @@ module Overhear
         metadata = listen['track_metadata']
         Song.from_track_metadata(metadata)
       end
+    end
+
+    private
+
+    # Validates the listen submission parameters
+    # @param listen_type [String] the type of listen submission
+    # @param listens [Array<Hash>] array of listen data to submit
+    # @raise [ArgumentError] if listen_type is invalid or listens is empty
+    # @raise [ArgumentError] if playing_now submission contains timestamps
+    # @api private
+    def validate_listen_submission(listen_type, listens)
+      valid_types = %w[single playing_now import]
+      unless valid_types.include?(listen_type)
+        Overhear.logger.error("Invalid listen_type: #{listen_type}")
+        raise ArgumentError, "Invalid listen_type: #{listen_type}. Must be one of: #{valid_types.join(', ')}"
+      end
+
+      if listens.empty?
+        Overhear.logger.error('Empty listens array')
+        raise ArgumentError, 'Listens array cannot be empty'
+      end
+
+      if listen_type == 'playing_now'
+        listens.each do |listen|
+          if listen.key?('listened_at') || listen.key?(:listened_at)
+            Overhear.logger.error('Playing_now submission contains timestamp')
+            raise ArgumentError, 'Playing_now submissions must not contain timestamps'
+          end
+        end
+      end
+
+      Overhear.logger.info('Listen submission validation passed')
     end
   end
 end
