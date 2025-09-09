@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module Overhear
+  # rubocop:disable Metrics/ClassLength
+  # This class aggregates several ListenBrainz endpoints; its length is acceptable for now.
   class ListenClient < AuthenticatableClient
     # Submits listens to the ListenBrainz server
     # @param listen_type [String] the type of listen submission ('single', 'playing_now', or 'import')
@@ -107,6 +109,53 @@ module Overhear
       end
     end
 
+    # Gets the timestamp of the newest listen submitted by a user in previous imports.
+    # Defaults to the authenticated user's username if none is provided.
+    # @param user_name [String, nil] the MusicBrainz ID (username) to query; defaults to the authenticated user
+    # @return [Integer] the latest import timestamp (UNIX epoch)
+    # @example
+    #   ts = client.latest_import
+    #   ts_for_other = client.latest_import(user_name: 'other_user')
+    # @since 0.2.0
+    def latest_import(user_name: nil)
+      uname = user_name || @username
+      Overhear.logger.info("Fetching latest import timestamp for user: #{uname}")
+      response = get('/1/latest-import', default_headers, { user_name: uname })
+      body = parse_response(response)
+      (body['latest_import'] || 0).to_i
+    end
+
+    # Updates the timestamp of the newest listen submitted by the authenticated user.
+    # @param timestamp [Integer] the UNIX epoch timestamp to set as latest import
+    # @return [Boolean] true if the update succeeded
+    # @raise [ArgumentError] if timestamp is not a non-negative Integer
+    # @raise [Overhear::InvalidTokenError] if the server returns 401 Unauthorized
+    # @raise [StandardError] for other non-success HTTP statuses
+    # @example
+    #   client.update_latest_import(Time.now.to_i)
+    # @since 0.2.0
+    def update_latest_import(timestamp)
+      Overhear.logger.info("Updating latest import timestamp to #{timestamp} for user: #{@username}")
+      unless timestamp.is_a?(Integer) && timestamp >= 0
+        Overhear.logger.error('Invalid timestamp provided for update_latest_import')
+        raise ArgumentError, 'timestamp must be a non-negative Integer UNIX timestamp'
+      end
+
+      response = post('/1/latest-import', default_headers, { ts: timestamp })
+
+      case response.status
+      when 200
+        Overhear.logger.info('Latest import timestamp updated successfully')
+        true
+      when 401
+        Overhear.logger.error('Unauthorized when updating latest import timestamp')
+        raise InvalidTokenError, 'Invalid authorization when updating latest import'
+      else
+        Overhear.logger.error("Failed to update latest import: #{response.status}")
+        raise StandardError, "Update latest import failed with status #{response.status}"
+      end
+    end
+
     # Deletes a particular listen from the user's listen history
     # Schedules the listen for deletion as per ListenBrainz semantics
     # @param listened_at [Integer] the UNIX timestamp of the listen to delete
@@ -200,5 +249,6 @@ module Overhear
 
       Overhear.logger.info('Listen submission validation passed')
     end
+    # rubocop:enable Metrics/ClassLength
   end
 end
