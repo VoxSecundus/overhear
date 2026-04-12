@@ -4,15 +4,10 @@ require_relative 'overhear/version'
 
 # @author VoxSecundus
 # @since 0.1.0
-# @example Basic usage with a user token
-#   client = Overhear::UserClient.new('your_listenbrainz_token')
-#   now_playing = client.now_playing
-#   puts "Currently playing: #{now_playing.name} by #{now_playing.artist_names}"
-#
-# @example Getting listen count
-#   client = Overhear::UserClient.new('your_listenbrainz_token')
-#   count = client.listen_count
-#   puts "Total listens: #{count}"
+# @example Basic usage
+#   client = Overhear::Client.new('your_listenbrainz_token')
+#   puts client.user.now_playing&.name
+#   puts client.listens.listen_count
 #
 # @example Using debug mode with configurable verbosity
 #   # Set debug level via environment variable
@@ -20,14 +15,12 @@ require_relative 'overhear/version'
 #
 #   # Or configure programmatically
 #   Overhear.logger.level = :DEBUG
-#
-#   client = Overhear::UserClient.new('your_listenbrainz_token')
-#   # Debug output will be shown based on configured level
+#   client = Overhear::Client.new('your_listenbrainz_token')
 module Overhear
-  require 'overhear/clients/client'
-  require 'overhear/clients/authenticatable_client'
-  require 'overhear/clients/user_client'
-  require 'overhear/clients/listen_client'
+  require 'overhear/http_connection'
+  require 'overhear/services/listens_service'
+  require 'overhear/services/user_service'
+  require 'overhear/client'
   require 'overhear/song'
   require 'overhear/logger'
 
