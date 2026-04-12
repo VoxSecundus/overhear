@@ -54,6 +54,10 @@ module Overhear
   # @since 0.1.0
   class UserService
     def initialize: (HttpConnection http, String username) -> void
+    def search_users: (String search_term) -> Array[String]
+    def similar_users: -> Array[Hash[String, untyped]]
+    def similarity_with: (String other_username) -> Hash[String, untyped]
+    def services: -> Array[String]
     def now_playing: -> Song?
   end
 

@@ -220,6 +220,67 @@ def stub_delete_listen(token, listened_at:, recording_msid:, status: 200)
     )
 end
 
+# Helper to stub GET /1/search/users
+# @param token [String]
+# @param search_term [String]
+# @param usernames [Array<String>]
+# @return [WebMock::StubRegistry::Stub]
+def stub_search_users(token, search_term:, usernames: ['test_user'])
+  stub_request(:get, "#{Overhear::HttpConnection::API_ROOT}/1/search/users")
+    .with(headers: auth_headers(token), query: { 'search_term' => search_term })
+    .to_return(
+      status: 200,
+      body: { users: usernames.map { |u| { user_name: u } } }.to_json,
+      headers: json_headers
+    )
+end
+
+# Helper to stub GET /1/user/{username}/similar-users
+# @param token [String]
+# @param username [String]
+# @param payload [Array<Hash>]
+# @return [WebMock::StubRegistry::Stub]
+def stub_similar_users(token, username: 'test_user', payload: [{ 'user_name' => 'other_user', 'similarity' => 75 }])
+  stub_request(:get, "#{Overhear::HttpConnection::API_ROOT}/1/user/#{username}/similar-users")
+    .with(headers: auth_headers(token))
+    .to_return(
+      status: 200,
+      body: { payload: payload }.to_json,
+      headers: json_headers
+    )
+end
+
+# Helper to stub GET /1/user/{username}/similar-to/{other_username}
+# @param token [String]
+# @param username [String]
+# @param other_username [String]
+# @param similarity [Integer]
+# @return [WebMock::StubRegistry::Stub]
+def stub_similarity_with(token, other_username:, username: 'test_user', similarity: 50)
+  stub_request(:get, "#{Overhear::HttpConnection::API_ROOT}/1/user/#{username}/similar-to/#{other_username}")
+    .with(headers: auth_headers(token))
+    .to_return(
+      status: 200,
+      body: { payload: { user_name: other_username, similarity: similarity } }.to_json,
+      headers: json_headers
+    )
+end
+
+# Helper to stub GET /1/user/{username}/services
+# @param token [String]
+# @param username [String]
+# @param services [Array<String>]
+# @return [WebMock::StubRegistry::Stub]
+def stub_services(token, username: 'test_user', services: ['spotify'])
+  stub_request(:get, "#{Overhear::HttpConnection::API_ROOT}/1/user/#{username}/services")
+    .with(headers: auth_headers(token))
+    .to_return(
+      status: 200,
+      body: { user_name: username, services: services }.to_json,
+      headers: json_headers
+    )
+end
+
 # Simple Response class for testing
 class Response
   attr_reader :body

@@ -11,6 +11,42 @@ module Overhear
       @username = username
     end
 
+    # Searches for ListenBrainz-registered users matching a search term
+    # @param search_term [String] the term to search for
+    # @return [Array<String>] matched usernames
+    def search_users(search_term)
+      Overhear.logger.info("Searching for users matching: #{search_term}")
+      response = @http.get('/1/search/users', @http.default_headers, { search_term: search_term })
+      users = @http.parse_response(response)['users']
+      Overhear.logger.info("Found #{users.size} matching users")
+      users.map { |u| u['user_name'] }
+    end
+
+    # Gets users with similar listening taste to the authenticated user
+    # @return [Array<Hash>] list of similar users, each with 'user_name' and 'similarity' keys
+    def similar_users
+      Overhear.logger.info("Fetching similar users for: #{@username}")
+      response = @http.get("/1/user/#{@username}/similar-users", @http.default_headers)
+      @http.parse_response(response)['payload']
+    end
+
+    # Gets the similarity score between the authenticated user and another user
+    # @param other_username [String] the other user's username
+    # @return [Hash] a hash with 'user_name' and 'similarity' keys
+    def similarity_with(other_username)
+      Overhear.logger.info("Fetching similarity between #{@username} and #{other_username}")
+      response = @http.get("/1/user/#{@username}/similar-to/#{other_username}", @http.default_headers)
+      @http.parse_response(response)['payload']
+    end
+
+    # Gets external services connected to the authenticated user's account
+    # @return [Array<String>] list of connected service names
+    def services
+      Overhear.logger.info("Fetching connected services for: #{@username}")
+      response = @http.get("/1/user/#{@username}/services", @http.default_headers)
+      @http.parse_response(response)['services']
+    end
+
     # Gets the user's currently playing track
     # @return [Song, nil] the currently playing song, or nil if nothing is playing
     def now_playing

@@ -20,6 +20,8 @@ bundle exec ruby -Ilib:test test/test_listen_client.rb
 
 Overhear is a Ruby gem providing a client library for the [ListenBrainz Web API](https://listenbrainz.readthedocs.io/en/latest/users/api/index.html). ListenBrainz is a music scrobbling/tracking service.
 
+Use the [ListenBrainz OpenAPI docs](https://rain0r.github.io/listenbrainz-openapi/index.html) as the reference for endpoint request/response schemas when implementing new API methods.
+
 ### Client Design
 
 ```
