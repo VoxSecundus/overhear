@@ -16,7 +16,7 @@ WebMock.disable_net_connect!
 # @param username [String] the username to return if valid
 # @return [WebMock::StubRegistry::Stub] the created stub
 def stub_token_validation(token, valid: true, username: 'test_user')
-  stub_request(:get, "#{Overhear::Client::API_ROOT}/1/validate-token")
+  stub_request(:get, "#{Overhear::HttpConnection::API_ROOT}/1/validate-token")
     .with(
       headers: {
         'Authorization' => "Token #{token}"
@@ -51,7 +51,7 @@ end
 # @param latest_import [Integer]
 # @return [WebMock::StubRegistry::Stub]
 def stub_latest_import_get(token, username: 'test_user', latest_import: 0)
-  stub_request(:get, "#{Overhear::Client::API_ROOT}/1/latest-import")
+  stub_request(:get, "#{Overhear::HttpConnection::API_ROOT}/1/latest-import")
     .with(headers: auth_headers(token), query: { 'user_name' => username })
     .to_return(
       status: 200,
@@ -69,7 +69,7 @@ end
 # @param status [Integer]
 # @return [WebMock::StubRegistry::Stub]
 def stub_latest_import_post(token, timestamp:, status: 200)
-  stub_request(:post, "#{Overhear::Client::API_ROOT}/1/latest-import")
+  stub_request(:post, "#{Overhear::HttpConnection::API_ROOT}/1/latest-import")
     .with(
       headers: auth_headers(token).merge('Content-Type' => 'application/json'),
       body: { ts: timestamp }.to_json
@@ -93,7 +93,7 @@ end
 # @param count [Integer] the count to return in the response
 # @return [WebMock::StubRegistry::Stub] the created stub
 def stub_listen_count(token, username: 'test_user', count: 42)
-  stub_request(:get, "#{Overhear::Client::API_ROOT}/1/user/#{username}/listen-count")
+  stub_request(:get, "#{Overhear::HttpConnection::API_ROOT}/1/user/#{username}/listen-count")
     .with(headers: auth_headers(token))
     .to_return(
       status: 200,
@@ -143,7 +143,7 @@ end
 # @param response_body [String] optional custom response body
 # @return [WebMock::StubRegistry::Stub] the created stub
 def stub_listens(token, username: 'test_user', query_params: {}, response_body: nil)
-  request = stub_request(:get, "#{Overhear::Client::API_ROOT}/1/user/#{username}/listens")
+  request = stub_request(:get, "#{Overhear::HttpConnection::API_ROOT}/1/user/#{username}/listens")
             .with(headers: auth_headers(token))
 
   # Add query parameters if provided
@@ -163,7 +163,7 @@ end
 # @param response_body [String] optional custom response body
 # @return [WebMock::StubRegistry::Stub] the created stub
 def stub_now_playing(token, username: 'test_user', response_body: nil)
-  stub_request(:get, "#{Overhear::Client::API_ROOT}/1/user/#{username}/playing-now")
+  stub_request(:get, "#{Overhear::HttpConnection::API_ROOT}/1/user/#{username}/playing-now")
     .with(headers: auth_headers(token))
     .to_return(
       status: 200,
@@ -184,7 +184,7 @@ def stub_submit_listens(token, listen_type: 'single', listens: [], status: 200)
     payload: listens
   }
 
-  stub_request(:post, "#{Overhear::Client::API_ROOT}/1/submit-listens")
+  stub_request(:post, "#{Overhear::HttpConnection::API_ROOT}/1/submit-listens")
     .with(
       headers: auth_headers(token).merge('Content-Type' => 'application/json'),
       body: expected_body.to_json
@@ -208,7 +208,7 @@ def stub_delete_listen(token, listened_at:, recording_msid:, status: 200)
     recording_msid: recording_msid
   }
 
-  stub_request(:post, "#{Overhear::Client::API_ROOT}/1/delete-listen")
+  stub_request(:post, "#{Overhear::HttpConnection::API_ROOT}/1/delete-listen")
     .with(
       headers: auth_headers(token).merge('Content-Type' => 'application/json'),
       body: expected_body.to_json

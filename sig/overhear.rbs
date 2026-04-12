@@ -1,6 +1,6 @@
 module Overhear
   VERSION: String
-  
+
   # The global logger instance used throughout the gem for logging messages
   # with configurable verbosity levels.
   #
@@ -8,47 +8,53 @@ module Overhear
   # @see Overhear::Logger
   # @since 0.1.0
   def self.logger: -> Logger
-  
+
   # Error class for invalid ListenBrainz API token
   class InvalidTokenError < StandardError
     def initialize: (?String msg) -> void
   end
 
-  # Abstract class for all client subclasses
-  class Client
+  # Wraps Faraday HTTP primitives and authentication headers.
+  # Injected into service objects.
+  # @since 0.1.0
+  class HttpConnection
     API_ROOT: String
 
-    private
+    def initialize: (String token) -> void
+    def default_headers: -> Hash[String, String]
+    def parse_response: (untyped response) -> Hash[String, untyped]
     def get: (String endpoint, Hash[String, String] headers, ?Hash[Symbol, untyped] params) -> untyped
+    def post: (String endpoint, Hash[String, String] headers, Hash[untyped, untyped] body) -> untyped
   end
 
-  # Base client class for authenticated API actions
+  # Top-level entry point. Validates the token once and exposes service accessors.
   # @since 0.1.0
-  class AuthenticatableClient < Client
+  class Client
     attr_reader username: String
     attr_reader token: String
 
     def initialize: (String token) -> void
-
-    private
-    def default_headers: -> Hash[String, String]
-    def validate_user_token: -> Hash[String, untyped]
-    def parse_response: (untyped response) -> Hash[String, untyped]
+    def listens: -> ListensService
+    def user: -> UserService
   end
 
-  # Client class for user-specific actions
-  class UserClient < AuthenticatableClient
-    def now_playing: -> Song?
-  end
-
-  # Client class for actions related to listens
-  class ListenClient < AuthenticatableClient
+  # Service for listen-related API actions.
+  # @since 0.1.0
+  class ListensService
+    def initialize: (HttpConnection http, String username) -> void
     def listen_count: -> Integer
     def listens: (?max_ts: Integer?, ?min_ts: Integer?, ?count: Integer?) -> Array[Song]
     def submit_listens: (String listen_type, Array[Hash[String | Symbol, untyped]] listens) -> Hash[String, untyped]
     def latest_import: (?user_name: String?) -> Integer
     def update_latest_import: (Integer timestamp) -> bool
     def delete_listen: (listened_at: Integer, recording_msid: String) -> Hash[String, untyped]
+  end
+
+  # Service for user-specific API actions.
+  # @since 0.1.0
+  class UserService
+    def initialize: (HttpConnection http, String username) -> void
+    def now_playing: -> Song?
   end
 
   # Class to represent a single song in the ListenBrainz database
@@ -62,49 +68,49 @@ module Overhear
     def initialize: (artist_names: Array[String], name: String, release_name: String, isrc: String?, duration: Integer?) -> void
     def self.from_track_metadata: (Hash[String, untyped] metadata) -> Song
   end
-  
+
   # Logger class for Overhear gem with configurable verbosity levels
   class Logger
     # Available log levels in order of increasing verbosity
     LEVELS: Hash[Symbol, Integer]
-    
+
     # @return [Symbol] the current log level
     attr_reader level: Symbol
-    
+
     # Creates a new Logger instance
     def initialize: -> void
-    
+
     # Sets the log level
     # @param level [Symbol, String] the log level to set
     # @raise [ArgumentError] if the level is invalid
     def level=: (Symbol | String level) -> Symbol
-    
+
     # Logs a message at ERROR level
     def error: (String message) -> nil
-    
+
     # Logs a message at WARN level
     def warn: (String message) -> nil
-    
+
     # Logs a message at INFO level
     def info: (String message) -> nil
-    
+
     # Logs a message at DEBUG level
     def debug: (String message) -> nil
-    
+
     # Logs a message at TRACE level
     def trace: (String message) -> nil
-    
+
     # Logs a message if the current level is sufficient
     def log: (Symbol level, String message) -> nil
-    
+
     # Logs an object as JSON if the current level is sufficient
     def log_json: (Symbol level, untyped object) -> nil
-    
+
     private
-    
+
     # Determines if a message at the given level should be logged
     def should_log?: (Symbol level) -> bool
-    
+
     # Determines the log level from environment variables
     def determine_log_level: -> Symbol
   end
