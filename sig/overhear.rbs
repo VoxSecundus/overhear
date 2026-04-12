@@ -16,7 +16,7 @@ module Overhear
 
   # Wraps Faraday HTTP primitives and authentication headers.
   # Injected into service objects.
-  # @since 0.3.0
+  # @since 0.1.0
   class HttpConnection
     API_ROOT: String
 
@@ -28,7 +28,7 @@ module Overhear
   end
 
   # Top-level entry point. Validates the token once and exposes service accessors.
-  # @since 0.3.0
+  # @since 0.1.0
   class Client
     attr_reader username: String
     attr_reader token: String
@@ -39,7 +39,7 @@ module Overhear
   end
 
   # Service for listen-related API actions.
-  # @since 0.3.0
+  # @since 0.1.0
   class ListensService
     def initialize: (HttpConnection http, String username) -> void
     def listen_count: -> Integer
@@ -51,7 +51,7 @@ module Overhear
   end
 
   # Service for user-specific API actions.
-  # @since 0.3.0
+  # @since 0.1.0
   class UserService
     def initialize: (HttpConnection http, String username) -> void
     def now_playing: -> Song?

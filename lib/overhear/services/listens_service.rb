@@ -4,7 +4,7 @@ module Overhear
   # rubocop:disable Metrics/ClassLength
   # Service for listen-related ListenBrainz API actions.
   # Receives an HttpConnection and username rather than inheriting auth behaviour.
-  # @since 0.3.0
+  # @since 0.1.0
   class ListensService
     # @param http [Overhear::HttpConnection]
     # @param username [String] the authenticated user's ListenBrainz username

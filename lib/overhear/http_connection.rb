@@ -6,7 +6,7 @@ require 'json'
 module Overhear
   # Wraps Faraday HTTP primitives and authentication headers for the ListenBrainz API.
   # Injected into service objects rather than inherited from.
-  # @since 0.3.0
+  # @since 0.1.0
   class HttpConnection
     # Base URL for the ListenBrainz API
     # @return [String] the API root URL, defaults to 'https://api.listenbrainz.org'

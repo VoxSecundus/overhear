@@ -10,7 +10,7 @@ module Overhear
   #   client.listens.listen_count
   #   client.user.now_playing
   #
-  # @since 0.3.0
+  # @since 0.1.0
   class Client
     # @return [String] the authenticated user's ListenBrainz username
     attr_reader :username

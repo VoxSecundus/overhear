@@ -2,7 +2,7 @@
 
 module Overhear
   # Service for user-specific ListenBrainz API actions.
-  # @since 0.3.0
+  # @since 0.1.0
   class UserService
     # @param http [Overhear::HttpConnection]
     # @param username [String] the authenticated user's ListenBrainz username
