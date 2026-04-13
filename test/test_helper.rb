@@ -281,6 +281,129 @@ def stub_services(token, username: 'test_user', services: ['spotify'])
     )
 end
 
+# Helper to stub GET /1/metadata/recording/
+# @param token [String]
+# @param recording_mbids [Array<String>]
+# @param inc [String]
+# @param response_body [String]
+# @return [WebMock::StubRegistry::Stub]
+def stub_metadata_recording(token, recording_mbids:, inc:, response_body: nil)
+  stub_request(:get, "#{Overhear::HttpConnection::API_ROOT}/1/metadata/recording/")
+    .with(headers: auth_headers(token), query: { 'recording_mbids' => recording_mbids.join(','), 'inc' => inc })
+    .to_return(
+      status: 200,
+      body: response_body || { recording_mbids.first => { 'recording' => { 'name' => 'Test Recording' } } }.to_json,
+      headers: json_headers
+    )
+end
+
+# Helper to stub GET /1/metadata/release_group/
+# @param token [String]
+# @param release_group_mbids [Array<String>]
+# @param inc [String]
+# @param response_body [String]
+# @return [WebMock::StubRegistry::Stub]
+def stub_metadata_release_group(token, release_group_mbids:, inc:, response_body: nil)
+  stub_request(:get, "#{Overhear::HttpConnection::API_ROOT}/1/metadata/release_group/")
+    .with(headers: auth_headers(token), query: { 'release_group_mbids' => release_group_mbids.join(','), 'inc' => inc })
+    .to_return(
+      status: 200,
+      body: response_body || {
+        release_group_mbids.first => { 'release_group' => { 'name' => 'Test Release Group' } }
+      }.to_json,
+      headers: json_headers
+    )
+end
+
+# Helper to stub GET /1/metadata/lookup/
+# @param token [String]
+# @param artist_name [String]
+# @param recording_name [String]
+# @param inc [String]
+# @param release_name [String, nil]
+# @param metadata [Boolean]
+# @param response_body [String]
+# @return [WebMock::StubRegistry::Stub]
+# rubocop:disable Metrics/ParameterLists
+def stub_metadata_lookup(token, artist_name:, recording_name:, inc:, release_name: nil, metadata: false,
+                         response_body: nil)
+  query = { 'artist_name' => artist_name, 'recording_name' => recording_name, 'inc' => inc,
+            'metadata' => metadata.to_s }
+  query['release_name'] = release_name if release_name
+
+  stub_request(:get, "#{Overhear::HttpConnection::API_ROOT}/1/metadata/lookup/")
+    .with(headers: auth_headers(token), query: query)
+    .to_return(
+      status: 200,
+      body: response_body || {
+        'artist_credit_name' => artist_name,
+        'recording_name' => recording_name,
+        'recording_mbid' => 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee'
+      }.to_json,
+      headers: json_headers
+    )
+end
+# rubocop:enable Metrics/ParameterLists
+
+# Helper to stub GET /1/metadata/artist/
+# @param token [String]
+# @param artist_mbids [Array<String>]
+# @param inc [String]
+# @param response_body [String]
+# @return [WebMock::StubRegistry::Stub]
+def stub_metadata_artist(token, artist_mbids:, inc:, response_body: nil)
+  stub_request(:get, "#{Overhear::HttpConnection::API_ROOT}/1/metadata/artist/")
+    .with(headers: auth_headers(token), query: { 'artist_mbids' => artist_mbids.join(','), 'inc' => inc })
+    .to_return(
+      status: 200,
+      body: response_body || [{ 'artist_mbid' => artist_mbids.first, 'name' => 'Test Artist' }].to_json,
+      headers: json_headers
+    )
+end
+
+# Helper to stub POST /1/metadata/submit_manual_mapping/
+# @param token [String]
+# @param recording_mbid [String]
+# @param recording_msid [String]
+# @param status [Integer]
+# @return [WebMock::StubRegistry::Stub]
+def stub_submit_manual_mapping(token, recording_mbid:, recording_msid:, status: 200)
+  stub_request(:post, "#{Overhear::HttpConnection::API_ROOT}/1/metadata/submit_manual_mapping/")
+    .with(
+      headers: auth_headers(token).merge('Content-Type' => 'application/json'),
+      body: { recording_mbid: recording_mbid, recording_msid: recording_msid }.to_json
+    )
+    .to_return(
+      status: status,
+      body: (status == 200 ? { status: 'ok' } : { status: 'error' }).to_json,
+      headers: json_headers
+    )
+end
+
+# Helper to stub GET /1/metadata/get_manual_mapping/
+# @param token [String]
+# @param recording_msid [String]
+# @param status [Integer]
+# @param response_body [String, nil]
+# @return [WebMock::StubRegistry::Stub]
+def stub_get_manual_mapping(token, recording_msid:, status: 200, response_body: nil)
+  stub_request(:get, "#{Overhear::HttpConnection::API_ROOT}/1/metadata/get_manual_mapping/")
+    .with(headers: auth_headers(token), query: { 'recording_msid' => recording_msid })
+    .to_return(
+      status: status,
+      body: response_body || {
+        'status' => 'ok',
+        'mapping' => {
+          'recording_msid' => recording_msid,
+          'recording_mbid' => 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
+          'user_id' => 1,
+          'created' => '2024-01-01'
+        }
+      }.to_json,
+      headers: json_headers
+    )
+end
+
 # Simple Response class for testing
 class Response
   attr_reader :body
