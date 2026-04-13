@@ -45,6 +45,12 @@ module Overhear
       @user ||= UserService.new(@http, @username)
     end
 
+    # Returns the metadata service, lazily initialised
+    # @return [Overhear::MetadataService]
+    def metadata
+      @metadata ||= MetadataService.new(@http, @username)
+    end
+
     private
 
     # Validates the token against /1/validate-token

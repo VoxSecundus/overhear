@@ -20,6 +20,7 @@ module Overhear
   require 'overhear/http_connection'
   require 'overhear/services/listens_service'
   require 'overhear/services/user_service'
+  require 'overhear/services/metadata_service'
   require 'overhear/client'
   require 'overhear/song'
   require 'overhear/logger'

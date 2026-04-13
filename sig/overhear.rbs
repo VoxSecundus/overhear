@@ -36,6 +36,7 @@ module Overhear
     def initialize: (String token) -> void
     def listens: -> ListensService
     def user: -> UserService
+    def metadata: -> MetadataService
   end
 
   # Service for listen-related API actions.
@@ -48,6 +49,18 @@ module Overhear
     def latest_import: (?user_name: String?) -> Integer
     def update_latest_import: (Integer timestamp) -> bool
     def delete_listen: (listened_at: Integer, recording_msid: String) -> Hash[String, untyped]
+  end
+
+  # Service for metadata-related API actions.
+  # @since 0.1.0
+  class MetadataService
+    def initialize: (HttpConnection http, String username) -> void
+    def recording: (recording_mbids: Array[String], inc: String) -> Hash[String, untyped]
+    def release_group: (release_group_mbids: Array[String], inc: String) -> Hash[String, untyped]
+    def lookup: (artist_name: String, recording_name: String, inc: String, ?release_name: String?, ?metadata: bool) -> Hash[String, untyped]
+    def artist: (artist_mbids: Array[String], inc: String) -> Array[untyped]
+    def submit_manual_mapping: (recording_mbid: String, recording_msid: String) -> Hash[String, untyped]
+    def get_manual_mapping: (recording_msid: String) -> Hash[String, untyped]
   end
 
   # Service for user-specific API actions.
